@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment{
+        NETLIFY_SITE_ID= '618f277e-0e03-4838-98c8-854987c42118'
+    }
+
     stages {
         stage('Build') {
             agent {
@@ -36,6 +40,28 @@ pipeline {
             }
         }
 
+         stage('E2E') {
+            agent {
+                docker{
+                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    npm install serve
+                    node_modules/.bin/serve -s build &
+                    sleep 10
+                    npx playwrite test
+                 '''
+            }
+            post {
+                always {
+                    junit 'test-results/junit.xml'
+                }
+             }
+        }
+
         stage('Deploy') {
             agent {
                 docker{
@@ -51,26 +77,7 @@ pipeline {
             }
         }
 
-        stage('E2E') {
-            agent {
-                docker{
-                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install serve
-                    node_modules/.bin/ -s build &
-                    sleep 10
-                    npx playwrite test --reporter=html
-                 '''
-            }
-        }
+       
     }
-    post {
-        always {
-            junit 'test-results/junit.xml'
-        }
-    }
+
 }

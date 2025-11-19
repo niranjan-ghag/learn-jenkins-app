@@ -60,9 +60,10 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install -g serve
-                    serve -s build
-                    npx playwrite test
+                    npm install serve
+                    node_modules/.bin/ -s build &
+                    sleep 10
+                    npx playwrite test --reporter=html
                  '''
             }
         }

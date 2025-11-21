@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Docker'){
             steps{
-                sh 'docekr build -t node-alpine .'
+                sh 'docker build -t node-alpine .'
             }
         }
         stage('Build') {

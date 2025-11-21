@@ -1,2 +1,2 @@
-FROM node:18-alpine
+FROM mcr.microsoft.com/playwright:v1.56.1-noble
 RUN npm install -g netlify-cli node-jq

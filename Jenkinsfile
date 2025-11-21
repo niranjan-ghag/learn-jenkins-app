@@ -7,11 +7,11 @@ pipeline {
     }
 
     stages {
-        stage('Docker'){
-            steps{
-                sh 'docker build -t node-alpine .'
-            }
-        }
+        // stage('Docker'){
+        //     steps{
+        //         sh 'docker build -t node-alpine .'
+        //     }
+        // }
         stage('Build') {
             agent {
                 docker{
@@ -78,8 +78,6 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install
-                    npm run build
                     node --version
                     netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"

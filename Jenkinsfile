@@ -7,10 +7,15 @@ pipeline {
     }
 
     stages {
+        stage('Docker'){
+            steps{
+                sh 'docekr build -t node-alpine .'
+            }
+        }
         stage('Build') {
             agent {
                 docker{
-                    image 'node:18-alpine'
+                    image 'node-alpine'
                     reuseNode true
                 }
             }
@@ -29,7 +34,7 @@ pipeline {
         stage('Test') {
             agent {
                 docker{
-                    image 'node:18-alpine'
+                    image 'node-alpine'
                     reuseNode true
                 }
             }
@@ -67,18 +72,17 @@ pipeline {
         stage('Deploy') {
             agent {
                 docker{
-                    image 'node:18'
+                    image 'node-alpine'
                     reuseNode true
                 }
             }
             steps {
                 sh '''
-                    npm install netlify-cli node-jq
-                    node_modules/.bin/netlify --version
+                    netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod --json > deploy-output.json
-                    node_modules/.bin/node-jq -r 'deploy_url' deploy-output.json
+                    netlify status
+                    netlify deploy --dir=build --prod --json > deploy-output.json
+                    node-jq -r 'deploy_url' deploy-output.json
                  '''
             }
         }

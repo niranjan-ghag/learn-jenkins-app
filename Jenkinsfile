@@ -4,6 +4,7 @@ pipeline {
     environment{
         NETLIFY_SITE_ID= '618f277e-0e03-4838-98c8-854987c42118'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        AWS_ACCESS_KEY
     }
 
     stages {
@@ -21,9 +22,13 @@ pipeline {
                 }
             }
             steps{
-                sh '''
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')])
+                {
+                    sh '''
                     aws --version
+                    aws s3 ls
                 '''
+                }
             }
         }
 
